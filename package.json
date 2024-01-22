@@ -4,7 +4,8 @@
   "description": "Trying to make a web crawler with the help of boot.dev",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/pat955/web_crawler/issues"
   },
-  "homepage": "https://github.com/pat955/web_crawler#readme"
+  "homepage": "https://github.com/pat955/web_crawler#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "jsdom": "^24.0.0"
+  }
 }
