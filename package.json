@@ -1,0 +1,19 @@
+{
+  "name": "web_crawler",
+  "version": "1.0.0",
+  "description": "Trying to make a web crawler with the help of boot.dev",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pat955/web_crawler.git"
+  },
+  "author": "Patricija Pivoraite",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pat955/web_crawler/issues"
+  },
+  "homepage": "https://github.com/pat955/web_crawler#readme"
+}
