@@ -14,6 +14,10 @@ function getURLfromHTML(htmlBody, baseURL){
     return hrefAttributes
 }
 
+function crawlPage(url){
+
+}
+
 module.exports = {
     normalizeURL,
     getURLfromHTML
