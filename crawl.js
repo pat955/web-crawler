@@ -14,11 +14,17 @@ function getURLfromHTML(htmlBody, baseURL){
     return hrefAttributes
 }
 
-function crawlPage(url){
-
+async function crawlPage(currentURL){
+    const response = await fetch(currentURL)
+    if (response.status > 399){
+        throw new Error(response.status)
+    }else{
+        return await response.text()
+    }   
 }
 
 module.exports = {
     normalizeURL,
-    getURLfromHTML
+    getURLfromHTML,
+    crawlPage
   }
