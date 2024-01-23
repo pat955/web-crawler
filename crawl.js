@@ -14,14 +14,32 @@ function getURLfromHTML(htmlBody, baseURL){
     return hrefAttributes
 }
 
-async function crawlPage(currentURL){
+async function crawlPage(baseURL, currentURL, pages){
+    const normURL = currentURL
+    console.log(normURL)
+    if (!normURL.startsWith(normalizeURL(baseURL))){
+        return await pages}
+
+    if (!(normURL in pages)){
+        pages[normURL] = 0}
+    pages[normURL]++
+
     const response = await fetch(currentURL)
-    if (response.status > 399){
-        throw new Error(response.status)
-    }else{
-        return await response.text()
-    }   
+    const html = await response.text()     
+    const newURLs = await getURLfromHTML(html)
+
+    for (url of await newURLs){
+        let newURL = url
+        
+        if (!url.startsWith('http') && url.length > 2){
+            newURL = await normalizeURL(`${baseURL}${url}`)
+        }
+
+        pages = await crawlPage(baseURL, newURL, pages)
+    }
+    return pages
 }
+
 
 module.exports = {
     normalizeURL,
