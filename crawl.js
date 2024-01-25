@@ -1,4 +1,5 @@
 const { JSDOM } = require('jsdom')
+const { print } = require('./print.js')
 
 function normalizeURL(url){
     if (url[url.length-1]==='/'){
@@ -11,35 +12,33 @@ function getURLfromHTML(htmlBody, baseURL){
     const dom  = new JSDOM(htmlBody)
     const links = dom.window.document.querySelectorAll("a")
     const hrefAttributes = Array.from(links).map(link => link.href);
-    return hrefAttributes
+    return hrefAttributes.toString().split(',')
 }
 
 async function crawlPage(baseURL, currentURL, pages){
-    const normURL = currentURL
-    console.log(normURL)
-    if (!normURL.startsWith(normalizeURL(baseURL))){
-        return await pages}
+    const normURL = normalizeURL(currentURL)
+    if (!(normURL.startsWith(normalizeURL(baseURL)))){
+        return pages
+    }
 
     if (!(normURL in pages)){
-        pages[normURL] = 0}
+        pages[normURL] = 0
+    }
     pages[normURL]++
-
     const response = await fetch(currentURL)
-    const html = await response.text()     
-    const newURLs = await getURLfromHTML(html)
-
-    for (url of await newURLs){
-        let newURL = url
-        
-        if (!url.startsWith('http') && url.length > 2){
-            newURL = await normalizeURL(`${baseURL}${url}`)
+    
+    const html = await response.text()
+    const allURLs = await getURLfromHTML(html)
+    
+    for (let url of allURLs){
+        print(url)
+        if (url[0] === '/' && url.length > 2){
+            url =`${baseURL}${url}`
         }
-
-        pages = await crawlPage(baseURL, newURL, pages)
+        
     }
     return pages
-}
-
+}  
 
 module.exports = {
     normalizeURL,
