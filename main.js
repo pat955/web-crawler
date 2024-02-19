@@ -6,7 +6,7 @@ async function main(){
         throw new Error(`One argument needed, you have: ${args.length}` )}
     const baseURL = args[0]
     console.log(`${baseURL}\nStarting crawling...`)
-    const pages = {}
+    const pages = []
     const pageCount = await crawlPage(baseURL, baseURL, pages)
     console.log(await pageCount)
 }

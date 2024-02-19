@@ -23,26 +23,33 @@ function updatePages(pages, newPages){
 
 async function crawlPage(baseURL, currentURL, pages){
     const normURL = normalizeURL(currentURL)
+    // If the page is no longer on our base url, return
     if (!(normURL.startsWith(normalizeURL(baseURL)))){
         return pages}
-    
-    if (!(normURL in pages)){
-        pages[normURL] = 1}
+    // If the pages object already has an entry for the normalized version of the current URL, just increment the count and return the current pages.
+    if (normURL in pages){
+        pages[normURL] += 1
+        return pages}
+    //Otherwise, add an entry to the pages object for the normalized version of the current URL, 
+    //and set the count to 1 as long as the current url isn't the base url (the first page we're crawling). Set it to 0 if it is the base url.
     else{
-        return pages
+        if (!(normURL == (normalizeURL(baseURL)))){
+            pages[normURL] = 1}
+        else{
+            pages[normURL] = 0
+        }
     }
-    
     
     print(normURL)
     const response = await fetch(currentURL)
     const html = await response.text()
     const allURLs = await getURLfromHTML(html)
-    
+    // Recursively crawl each URL you found on the page and update the pages to keep an aggregate count
+    // Finally, return the updated pages object
     for (let url of allURLs){
         if (url[0] === '/' && url.length > 2){
             url =`${baseURL}${url}`}
         pages = await crawlPage(baseURL, url, pages)
-        
     }   
     return pages
 }  
