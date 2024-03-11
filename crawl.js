@@ -2,36 +2,31 @@ const { JSDOM } = require('jsdom')
 const { print } = require('./print.js')
 
 function normalizeURL(url){
-    if (url[url.length-1]==='/'){
+    // https://example.com --> example.com
+    if (url[url.length-1] === '/'){
         return url.slice(url.indexOf('/')+2, url.length-1)
     }
     return url.slice(url.indexOf('/')+2)
 }
 
-function getURLfromHTML(htmlBody, baseURL){
+function getURLfromHTML(htmlBody, _baseURL){
+    // Returns all urls found in html body as a list 
     const dom  = new JSDOM(htmlBody)
     const links = dom.window.document.querySelectorAll("a")
     const hrefAttributes = Array.from(links).map(link => link.href);
     return hrefAttributes.toString().split(',')
 }
-function updatePages(pages, newPages){
-    print(newPages)
-    for (const [key, value] of Object.entries(newPages)){
-        pages[key] += value
-    }
-}
 
 async function crawlPage(baseURL, currentURL, pages){
     const normURL = normalizeURL(currentURL)
-    // If the page is no longer on our base url, return
+    // If the page is no longer on our base url, return pages
     if (!(normURL.startsWith(normalizeURL(baseURL)))){
         return pages}
-    // If the pages object already has an entry for the normalized version of the current URL, just increment the count and return the current pages.
+    // If the pages object already has an entry, increment
     if (normURL in pages){
         pages[normURL] += 1
         return pages}
-    //Otherwise, add an entry to the pages object for the normalized version of the current URL, 
-    //and set the count to 1 as long as the current url isn't the base url (the first page we're crawling). Set it to 0 if it is the base url.
+    // Otherwise, add an entry. Set it to 1 unless its the base url.
     else{
         if (!(normURL == (normalizeURL(baseURL)))){
             pages[normURL] = 1}
@@ -39,13 +34,12 @@ async function crawlPage(baseURL, currentURL, pages){
             pages[normURL] = 0
         }
     }
-    
+    // Print url when moving on, fetch url and extract urls
     print(normURL)
     const response = await fetch(currentURL)
     const html = await response.text()
     const allURLs = await getURLfromHTML(html)
-    // Recursively crawl each URL you found on the page and update the pages to keep an aggregate count
-    // Finally, return the updated pages object
+    // Update and recursively call crawlPage
     for (let url of allURLs){
         if (url[0] === '/' && url.length > 2){
             url =`${baseURL}${url}`}
@@ -54,6 +48,7 @@ async function crawlPage(baseURL, currentURL, pages){
     return pages
 }  
 
+// Export modules for main
 module.exports = {
     normalizeURL,
     getURLfromHTML,
