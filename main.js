@@ -10,34 +10,24 @@ async function main(){
     const baseURL = args[0]
     console.log(`${baseURL}\nStarting crawling...`)
     
-    const date = new Date()  
-    const today =  date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
-
-    if (fs.existsSync('cache.json')){
+    try{
         const json = JSON.parse(fs.readFileSync("cache.json"))
-
         if (baseURL in json["urls"]){
+            console.log('here')
             console.log(json["urls"][baseURL]["page count"])
             return 
-
-        }else{
-            const pages = {}
-            const pageCount = await crawlPage(baseURL, baseURL, pages)
-            console.log(pageCount)
-
-            json["urls"][baseURL] =  {
-                "page count": await pageCount,
-                "cache time" : today
-            }
-            fs.writeFile('cache.json', JSON.stringify(json, undefined, 4), (err) => err && console.error(err))
         }
-    }else{
         const pages = {}
         const pageCount = await crawlPage(baseURL, baseURL, pages)
-        console.log(pageCount)
 
-        const newCacheFile = JSON.stringify({"urls": {[baseURL] : {"page count" : pageCount, "cache time": today}}}, undefined, 4)
-        fs.writeFile('cache.json', newCacheFile, (err) => err && console.error(err))
+        console.log(cache(baseURL, await pageCount))
+
+    }catch (error) {
+        console.log(error)
+        const pages = {}
+        const pageCount = await crawlPage(baseURL, baseURL, pages)
+
+        console.log(cache(baseURL, await pageCount))
     }    
 }
 
@@ -55,6 +45,30 @@ function searchCache(keyword, baseURL){
         }
     }
     return array
+}
+
+function cache(baseURL, pageCount){
+    const date = new Date()  
+    const today =  date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
+    
+    if (!fs.existsSync('cache.json')){
+        const json = {"urls": {[baseURL] : {"page count" : pageCount, "cache time": today}}}
+        fs.writeFile('cache.json', JSON.stringify(json, undefined, 4), (err) => err && console.error(err))
+        // return used for prints to avoid redundancy 
+
+        return json["urls"][baseURL]["page count"]
+
+    }else{
+        const json = JSON.parse(fs.readFileSync("cache.json"))
+        json["urls"][baseURL] =  {
+            "page count": pageCount,
+            "cache time" : today
+        }
+        fs.writeFile('cache.json', JSON.stringify(json, undefined, 4), (err) => err && console.error(err))
+        // return used for prints to avoid redundancy 
+
+        return json["urls"][baseURL]["page count"]
+    }
 }
 
 main()
