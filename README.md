@@ -1,5 +1,5 @@
 # Web Crawler
-This is a simple webcrawler. Provided a url, it will (if possible) recursively go through html for other urls and count them. 
+This is a simple webcrawler. Provided a url, it will (if possible) recursively go through html searching for links to other pages under provided domain, and count/collect them. 
 
 ## How to use
 ```
@@ -11,6 +11,7 @@ After cloning run main with a website(that allows crawling) as argument
 ```
 node main.js <example.com>  # You can use blog.boot.dev/go ("/go" for brevity) to test
 ```
+### Expected result
 Output should look something like this:
 ```
 blog.boot.dev/go/about
